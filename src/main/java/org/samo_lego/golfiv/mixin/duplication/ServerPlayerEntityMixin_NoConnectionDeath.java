@@ -1,6 +1,7 @@
 package org.samo_lego.golfiv.mixin.duplication;
 
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,8 +26,8 @@ public abstract class ServerPlayerEntityMixin_NoConnectionDeath {
     /**
      * Checks whether player is even connected before applying damage.
      */
-    @Inject(method = "damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
-    private void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    private void damage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if(golfConfig.duplication.patchDeathDuplication && this.isDisconnected())
             cir.setReturnValue(false);
     }

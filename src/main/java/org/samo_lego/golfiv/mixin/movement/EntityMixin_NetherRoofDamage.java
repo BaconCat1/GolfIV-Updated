@@ -25,7 +25,7 @@ public abstract class EntityMixin_NetherRoofDamage {
     private void golfiv_inflictRoofDamage(CallbackInfo ci) {
         if (golfConfig.main.inflictNetherRoofDamage != -1 &&
                 self.getY() >= golfConfig.main.inflictNetherRoofDamage &&
-                self.getEntityWorld().getRegistryKey() == World.NETHER) {
+                self.getWorld().getRegistryKey() == World.NETHER) {
             this.tickInVoid();
         }
     }

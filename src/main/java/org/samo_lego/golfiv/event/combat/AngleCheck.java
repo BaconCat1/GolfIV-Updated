@@ -38,7 +38,7 @@ public class AngleCheck implements UseEntityCallback, AttackEntityCallback {
             Box bBox = victim.getBoundingBox();
 
             // Checking if victim is behind player
-            if(xOffset * victim.getX() + bBox.getXLength() / 2 - xOffset * player.getX() < 0 || zOffset * victim.getZ() + bBox.getZLength() / 2 - zOffset * player.getZ() < 0) {
+            if(xOffset * victim.getX() + bBox.getLengthX() / 2 - xOffset * player.getX() < 0 || zOffset * victim.getZ() + bBox.getLengthZ() / 2 - zOffset * player.getZ() < 0) {
                 // "Dumb" check
                 return ActionResult.FAIL;
             }
@@ -48,7 +48,7 @@ public class AngleCheck implements UseEntityCallback, AttackEntityCallback {
 
             double phi = beta - Math.toRadians(player.getYaw());
             //todo can be improved?
-            double allowedAttackSpace = Math.sqrt(bBox.getXLength() * bBox.getXLength() + bBox.getZLength() * bBox.getZLength());
+            double allowedAttackSpace = Math.sqrt(bBox.getLengthX() * bBox.getLengthX() + bBox.getLengthZ() * bBox.getLengthZ());
 
             if(Math.abs(victimDistance * Math.sin(phi)) > allowedAttackSpace / 2 + 0.2D) {
                 // Fine check

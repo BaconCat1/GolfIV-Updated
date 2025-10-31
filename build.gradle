@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.12.3'
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id "com.modrinth.minotaur" version "2.+"
 	id 'maven-publish'
@@ -7,6 +7,7 @@ plugins {
 }
 
 repositories {
+	maven { url 'https://maven.fabricmc.net/' }
 	maven { url 'https://jitpack.io' }
 	mavenCentral()
 	maven {
@@ -14,9 +15,12 @@ repositories {
 	}
 }
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
 group = project.maven_group
+version = project.mod_version
+
+base {
+	archivesName = project.archives_base_name
+}
 
 dependencies {
 	// To change the versions see the gradle.properties file
@@ -55,10 +59,13 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.encoding = "UTF-8"
 
 	// Minecraft 1.17 (21w19a) upwards uses Java 16.
-	it.options.release = 16
+	it.options.release = 21
 }
 
 java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	// if it is present.
 	// If you remove this line, sources will not be generated.
@@ -67,7 +74,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+		rename { "${it}_${project.base.archivesName.get()}"}
 	}
 }
 
@@ -117,7 +124,8 @@ curseforge {
 		addGameVersion "${project.minecraft_version}"
 		addGameVersion "Fabric"
 
-		mainArtifact(file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")) {
+		def artifactName = project.base.archivesName.get()
+		mainArtifact(file("${project.buildDir}/libs/${artifactName}-${version}.jar")) {
 			displayName = "[${project.minecraft_version}] GolfIV ${version}"
 		}
 
@@ -145,9 +153,9 @@ modrinth {
 	versionType = "release"
 	changelog = ENV.CHANGELOG ?: "A changelog can be found at https://github.com/samolego/GolfIV/releases/tag/${version}"
 
-	uploadFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
+	def artifactName = project.base.archivesName.get()
+	uploadFile = file("${project.buildDir}/libs/${artifactName}-${version}.jar")
 
 	gameVersions = [project.minecraft_version]
 	loaders = ['fabric', 'quilt']
 }
-

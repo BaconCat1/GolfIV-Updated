@@ -34,7 +34,7 @@ public class ServerPlayNetworkHandlerMixin_IllegalsCheckSlot {
     )
     private void checkSlot(ClickSlotC2SPacket packet, CallbackInfo ci) {
         ((Golfer) player).setOpenGui(golfConfig.main.checkInventoryActions);
-        int packetSlot = packet.getSlot();
+        int packetSlot = packet.slot();
         if(packetSlot >= 0) {
             ItemStack itemStack = this.player.currentScreenHandler.getSlot(packetSlot).getStack();
             //noinspection ConstantConditions

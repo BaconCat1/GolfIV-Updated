@@ -3,7 +3,7 @@ package org.samo_lego.golfiv.mixin.illegal_actions;
 import net.minecraft.entity.Entity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.TeleportTarget;
 import org.jetbrains.annotations.Nullable;
 import org.samo_lego.golfiv.casts.Golfer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,11 +43,8 @@ public class ServerPlayerEntityMixin_InventoryClose {
      * Sets the open GUI status to false when
      * the player is teleported between worlds.
      */
-    @Inject(
-            method = "moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;",
-            at = @At("HEAD")
-    )
-    private void closeGui(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
+    @Inject(method = "teleportTo(Lnet/minecraft/world/TeleportTarget;)Lnet/minecraft/entity/Entity;", at = @At("HEAD"))
+    private void closeGui(TeleportTarget target, CallbackInfoReturnable<Entity> cir) {
         golfer.setOpenGui(false);
     }
 

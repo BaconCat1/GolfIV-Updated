@@ -2,7 +2,6 @@ package org.samo_lego.golfiv.mixin.illegal_actions;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.samo_lego.golfiv.casts.Golfer;
-import org.samo_lego.golfiv.mixin.accessors.EntityAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +22,10 @@ public abstract class ServerPlayerEntityMixin_PortalsGuiCheck {
      */
     @Inject(method = "tick()V", at = @At("TAIL"))
     private void portalTick(CallbackInfo ci) {
-        if (this.golfer.hasOpenGui() && ((EntityAccessor) this).inNetherPortal()) {
+        ServerPlayerEntity self = (ServerPlayerEntity) (Object) this;
+        boolean inPortal = self.portalManager != null && self.portalManager.isInPortal();
+
+        if (this.golfer.hasOpenGui() && inPortal) {
             this.golfer.setGuiOpenInPortalTicks(this.golfer.getGuiOpenInPortalTicks() + 1);
         } else if (this.golfer.getGuiOpenInPortalTicks() != 0) {
             this.golfer.setGuiOpenInPortalTicks(0);

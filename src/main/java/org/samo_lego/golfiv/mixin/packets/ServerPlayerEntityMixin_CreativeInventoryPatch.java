@@ -3,7 +3,6 @@ package org.samo_lego.golfiv.mixin.packets;// Created 2022-08-01T15:18:06
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.samo_lego.golfiv.GolfIV;
@@ -20,9 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin_CreativeInventoryPatch extends PlayerEntity {
 
-
-    public ServerPlayerEntityMixin_CreativeInventoryPatch(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityMixin_CreativeInventoryPatch(World world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     /**

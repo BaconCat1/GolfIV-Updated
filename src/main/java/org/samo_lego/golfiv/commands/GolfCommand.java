@@ -27,12 +27,9 @@ public class GolfCommand {
     public static int reloadConfig(ServerCommandSource source) {
         golfConfig = GolfConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/GolfIV_config.json"));
 
-        if(source != null)
-            source.sendFeedback(
-                    Text.literal("Reloaded the config file!")
-                        .formatted(Formatting.GREEN),
-                    false
-            );
+        if (source != null) {
+            source.sendFeedback(() -> Text.literal("Reloaded the config file!").formatted(Formatting.GREEN), false);
+        }
         return 1;
     }
 }

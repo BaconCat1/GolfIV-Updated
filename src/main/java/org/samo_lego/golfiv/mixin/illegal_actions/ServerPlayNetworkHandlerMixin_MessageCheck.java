@@ -4,7 +4,6 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.samo_lego.golfiv.casts.Golfer;
-import org.samo_lego.golfiv.mixin.accessors.EntityAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +31,8 @@ public class ServerPlayNetworkHandlerMixin_MessageCheck {
             cancellable = true
     )
     private void stopMessageSend(ChatMessageC2SPacket packet, CallbackInfo ci) {
-        if ((golfConfig.main.checkInventoryActions && ((Golfer) player).hasOpenGui()) || (golfConfig.packet.checkPortalHack && ((EntityAccessor) player).inNetherPortal())) {
+        if ((golfConfig.main.checkInventoryActions && ((Golfer) player).hasOpenGui())
+                || (golfConfig.packet.checkPortalHack && player.portalManager != null && player.portalManager.isInPortal())) {
             ci.cancel();
         }
     }

@@ -3,8 +3,8 @@ package org.samo_lego.golfiv.mixin.illegal_items;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.inventory.StackWithSlot;
+import net.minecraft.storage.ReadView;
 import org.samo_lego.golfiv.casts.ItemStackChecker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 
 import static org.samo_lego.golfiv.GolfIV.golfConfig;
 
@@ -22,8 +21,6 @@ import static org.samo_lego.golfiv.GolfIV.golfConfig;
  */
 @Mixin(PlayerInventory.class)
 abstract class InventoryMixin_IllegalsCheckInvenUpdates {
-    @Shadow @Final private List<DefaultedList<ItemStack>> combinedInventory;
-
     @Shadow @Final public PlayerEntity player;
 
     /**
@@ -43,8 +40,8 @@ abstract class InventoryMixin_IllegalsCheckInvenUpdates {
      * @param tag the tag it is deserializing
      * @param ci callback info
      */
-    @Inject(method = "readNbt(Lnet/minecraft/nbt/NbtList;)V", at = @At("TAIL"))
-    private void onDeserialize(NbtList tag, CallbackInfo ci) {
+    @Inject(method = "readData", at = @At("TAIL"))
+    private void onDeserialize(ReadView.TypedListReadView<StackWithSlot> readView, CallbackInfo ci) {
         legaliseInventory();
     }
 
@@ -52,25 +49,15 @@ abstract class InventoryMixin_IllegalsCheckInvenUpdates {
      * Legalizes the entire inventory
      */
     private void legaliseInventory() {
-        if(
-            (golfConfig.items.survival.legaliseWholeInventory && !this.player.isCreative()) ||
-            (golfConfig.items.creative.legaliseWholeInventory && this.player.isCreative())
-        )
-            for (DefaultedList<ItemStack> stacks : this.combinedInventory) {
-                legaliseMany(stacks, !this.player.isCreative());
-            }
-    }
+        PlayerInventory inventory = (PlayerInventory) (Object) this;
+        boolean survival = !this.player.isCreative();
 
-    /**
-     * Legalizes every stack in a DefaultedList of stacks
-     *
-     * @param stacks the list of stacks
-     * @param survival whether or not the inventory holder is in survival
-     */
-    private void legaliseMany(DefaultedList<ItemStack> stacks, boolean survival) {
-        for (ItemStack itemStack : stacks) {
-            //noinspection ConstantConditions
-            ((ItemStackChecker) (Object) itemStack).makeLegal(survival);
+        if ((golfConfig.items.survival.legaliseWholeInventory && survival) ||
+                (golfConfig.items.creative.legaliseWholeInventory && !survival)) {
+            for (int slot = 0; slot < inventory.size(); slot++) {
+                ItemStack stack = inventory.getStack(slot);
+                ((ItemStackChecker) (Object) stack).makeLegal(survival);
+            }
         }
     }
 }
