@@ -6,8 +6,6 @@
   "mixins": [
     "PistonMixin_PreventDestruction",
     "ServerPlayerEntityMixinCast_Golfer",
-    "accessors.DataTrackerAccessor",
-    "accessors.EntityAccessor",
     "accessors.EntityEquipmentUpdateS2CPacketAccessor",
     "accessors.EntityPositionS2CPacketAccessor",
     "accessors.InventoryS2CPacketAccessor",

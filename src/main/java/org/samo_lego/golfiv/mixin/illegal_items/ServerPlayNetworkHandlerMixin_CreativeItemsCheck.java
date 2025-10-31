@@ -39,7 +39,8 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/item/BlockItem;getBlockEntityNbt(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/nbt/NbtCompound;"
-            )
+            ),
+            require = 0
     )
     private ItemStack golfiv$sanitizeCreativeItem(ItemStack stack) {
         if (stack.isEmpty()) {
