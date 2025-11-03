@@ -78,6 +78,23 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
 
         return stack;
     }
+    
+    /**
+     * Keeps {@link #golfiv$componentCache} aligned with the player's legitimate inventory component data.
+     * <p>
+     * When the slot content changes, the previous stack's component changes are cached under their hash so the
+     * data can later be restored during creative interactions (for example after pick-block).
+     * <p>
+     * The new stack is written to the slot afterwards; if it carries a GolfIV tag the cached components can be
+     * looked up and re-applied in {@link #golfiv$restoreTaggedStack(ItemStack)}.
+     *
+     * @param slot     The slot being updated.
+     * @param newStack The stack about to replace the current slot contents.
+     * @implNote Component caching runs only when {@link GolfConfig.Packet#patchItemKickExploit Patch Item Kick Exploit} is enabled.
+     * @author Ampflower
+     * @see GolfConfig.Packet#patchItemKickExploit
+     * @see #golfiv$restoreTaggedStack(ItemStack)
+     */
 
     @Redirect(
             method = "onCreativeInventoryAction",
