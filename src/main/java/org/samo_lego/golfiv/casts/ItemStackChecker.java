@@ -39,15 +39,35 @@ import java.util.Optional;
 
 
 /**
- * Checks ItemStacks and performs sanitisation routines.
+ * Checks iItemStacks.
  */
 public interface ItemStackChecker {
 
     int MAX_BANNER_PATTERNS = 12;
+
+    /**
+     * Cached unluck singleton
+     */
     Collection<StatusEffectInstance> UNLUCK = Collections.singleton(new StatusEffectInstance(StatusEffects.UNLUCK, 6000));
 
+    /**
+     * Checks the ItemStack and makes it legal.
+     * Removes all enchantments if they are incompatible or
+     * have too high level.
+     */
     void makeLegal(boolean survival);
 
+    /**
+     * Creates a fake ItemStack based on the
+     * provided stack.
+     * <p>
+     * E.g. removes enchantment info, stack size, etc.
+     * Used on ground ItemEntities / opponent's stacks etc.
+     *
+     * @param original   the original ItemStack
+     * @param spoofCount whether or not the item count should be faked
+     * @return the faked ItemStack
+     */
     static ItemStack fakeStack(ItemStack original, boolean spoofCount) {
         ItemStack fake = new ItemStack(original.getItem(), spoofCount ? original.getMaxCount() : original.getCount());
 
@@ -70,6 +90,16 @@ public interface ItemStackChecker {
         return fake;
     }
 
+    /**
+     * This is for keeping creative from getting inadvertently sanitised,
+     * as creative has the property of allowing one to summon any item at will,
+     * including freely mutating the inventory.
+     *
+     * @param stack The original ItemStack.
+     * @return The faked ItemStack, with a GolfIV pointer injected.
+     * @author Ampflower
+     * @see #inventoryStack(ItemStack)
+     */
     static ItemStack creativeInventoryStack(ItemStack stack) {
         ItemStack fake = inventoryStack(stack);
         ComponentChanges changes = stack.getComponentChanges();
@@ -81,6 +111,16 @@ public interface ItemStackChecker {
         return fake;
     }
 
+    /**
+     * Creates a fake ItemStack based on the
+     * provided stack.
+     * <p>
+     * Changes the tag to be the minimal required
+     * NBT to render in an inventory.
+     *
+     * @param stack The original ItemStack.
+     * @return The faked ItemStack
+     */
     static ItemStack inventoryStack(ItemStack stack) {
         ComponentChanges changes = stack.getComponentChanges();
         if (changes.isEmpty()) {
@@ -169,6 +209,14 @@ public interface ItemStackChecker {
         target.set(DataComponentTypes.PROFILE, new ProfileComponent(profile.name(), profile.uuid(), sanitizedProperties, gameProfile));
     }
 
+    /**
+     * Minimally copies over the banner NBT based on the provided blockEntity data.
+     * <p>
+     * Only the NBT required to render a layer is copied over.
+     *
+     * @param source the original ItemStack
+     * @param target the faked ItemStack to copy to.
+     */
     private static void sanitizeBanner(ItemStack source, ItemStack target) {
         BannerPatternsComponent patterns = source.get(DataComponentTypes.BANNER_PATTERNS);
         if (patterns == null) {
@@ -240,6 +288,15 @@ public interface ItemStackChecker {
         }
     }
 
+    /**
+     * Minimally copies over the crossbow data based on the provided data components.
+     * <p>
+     * Only the data required to render the crossbow, including rockets, is copied over.
+     *
+     * @param source      The raw crossbow stack.
+     * @param target      The faked ItemStack to copy to.
+     * @param isInventory Whether to send the raw item or not.
+     */
     private static void sanitizeCrossbow(ItemStack source, ItemStack target, boolean isInventory) {
         if (!(source.getItem() instanceof CrossbowItem) || !CrossbowItem.isCharged(source)) {
             return;

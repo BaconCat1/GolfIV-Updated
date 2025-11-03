@@ -18,6 +18,9 @@ import java.util.Set;
 
 import static org.samo_lego.golfiv.GolfIV.golfConfig;
 
+/**
+ * Additional methods for checking ItemStack's legality.
+ */
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixinCast_ItemStackChecker implements ItemStackChecker {
 
@@ -31,6 +34,11 @@ public abstract class ItemStackMixinCast_ItemStackChecker implements ItemStackCh
         return (ItemStack) (Object) this;
     }
 
+    /**
+     * Sets the appropriate ItemStack size and removes disallowed enchantments.
+     *
+     * @param survival whether survival-mode limits should be applied
+     */
     @Override
     public void makeLegal(boolean survival) {
         ItemStack stack = self();

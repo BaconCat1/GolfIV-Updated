@@ -114,6 +114,22 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
         slot.setStack(newStack);
     }
 
+    /**
+     * Clears {@link #golfiv$componentCache} when the current screen is closed.
+     * <p>
+     * This allows the cache to be reused for subsequent creative interactions and prevents
+     * indefinite retention of component data for the session.
+     * <p>
+     * The injection point remains after {@link net.minecraft.network.NetworkThreadUtils#forceMainThread}
+     * to avoid asynchronous access to the cache.
+     *
+     * @param packet Ignored by the method. Normally used to check sync ID.
+     * @param ci     Ignored by the method. Normally used to cancel the method or inspect its name.
+     * @implNote Despite only being relevant when {@link GolfConfig.Packet#patchItemKickExploit} is enabled,
+     * the cache is always cleared to keep behaviour consistent.
+     * @author Ampflower
+     * @see GolfConfig.Packet#patchItemKickExploit
+     */
     @Inject(method = "onCloseHandledScreen", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/server/world/ServerWorld;)V",
             shift = At.Shift.AFTER))
@@ -152,6 +168,13 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
         return true;
     }
 
+    /**
+     * Populates {@link #golfiv$componentCache} when the client submits an unknown GolfIV hash,
+     * usually caused by cloning via middle-click.
+     *
+     * @author Ampflower
+     * @see #golfiv$restoreTaggedStack(ItemStack)
+     */
     @Unique
     private void golfiv$populateComponentCache() {
         PlayerInventory inventory = this.player.getInventory();
@@ -161,6 +184,12 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
         golfiv$componentCachePopulated = true;
     }
 
+    /**
+     * Method reference for caching component changes by hash when present.
+     *
+     * @param stack The stack whose component changes should be stored.
+     * @author Ampflower
+     */
     @Unique
     private void golfiv$storeComponents(ItemStack stack) {
         if (stack.isEmpty()) {
