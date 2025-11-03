@@ -58,11 +58,8 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
 
     @ModifyVariable(
             method = "onCreativeInventoryAction(Lnet/minecraft/network/packet/c2s/play/CreativeInventoryActionC2SPacket;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/item/BlockItem;getBlockEntityNbt(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/nbt/NbtCompound;"
-            ),
-            require = 0
+            at = @At(value = "STORE"),
+            ordinal = 0
     )
     private ItemStack golfiv$sanitizeCreativeItem(ItemStack stack) {
         if (stack.isEmpty()) {
