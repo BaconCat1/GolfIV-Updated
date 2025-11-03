@@ -34,6 +34,28 @@ public abstract class ServerPlayNetworkHandlerMixin_CreativeItemsCheck {
     @Shadow
     public ServerPlayerEntity player;
 
+    /**
+     * Recovers stack NBT and clears illegal tags from creative items while still allowing pick block function.
+     * <p>
+     * If {@link GolfConfig.Packet#patchItemKickExploit Patch Item Kick Exploit} is enabled and the tag {@code GolfIV}
+     * is present, the hash is looked up in the cached component map to recover the original NBT of the item,
+     * allowing bypass of {@link GolfConfig.IllegalItems.Creative#removeCreativeNBTTags Remove Creative NBT Tags}.
+     * <p>
+     * If {@link GolfConfig.IllegalItems.Creative#removeCreativeNBTTags Remove Creative NBT Tags} is enabled,
+     * and the tag {@code GolfIV} was not found or invalid, then the items are sanitised in accordance to the
+     * set {@link GolfConfig.IllegalItems.Creative#whitelistedNBT Whitelisted NBT} in the config.
+     *
+     * @param itemStack The stack to either recover the NBT by hash from, or to be sanitized.
+     * @return Recovered stack if GolfIV hash tag is present and valid, "sanitized" stack otherwise.
+     * @author samo_lego
+     * @author Ampflower
+     * @see ItemStackChecker#fakeStack(ItemStack, boolean)
+     * @see org.samo_lego.golfiv.event.S2CPacket.ItemInventoryKickPatch
+     * @see GolfConfig.Packet#patchItemKickExploit
+     * @see GolfConfig.IllegalItems.Creative#removeCreativeNBTTags
+     * @see GolfConfig.IllegalItems.Creative#whitelistedNBT
+     */
+
     @ModifyVariable(
             method = "onCreativeInventoryAction(Lnet/minecraft/network/packet/c2s/play/CreativeInventoryActionC2SPacket;)V",
             at = @At(
