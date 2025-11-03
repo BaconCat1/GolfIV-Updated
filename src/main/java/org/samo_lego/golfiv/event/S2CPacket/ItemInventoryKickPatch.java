@@ -28,6 +28,21 @@ public class ItemInventoryKickPatch implements S2CPacketCallback {
 
     private static final int UNCOMPRESSED_PACKET_LIMIT = 2 * 1024 * 1024;
 
+    /**
+     * Removes non-critical tags from item stacks when the outgoing packet would exceed
+     * vanilla limits or the receiver is a creative player.
+     *
+     * <p>Creative players receive an additional {@code GolfIV} hash tag to keep their inventory
+     * representation stable when {@link org.samo_lego.golfiv.storage.GolfConfig.IllegalItems.Creative#removeCreativeNBTTags}
+     * is active, preventing the sanitized stack from being altered again by the client UI.
+     *
+     * @param packet packet being sent
+     * @param player player getting the packet
+     * @param server Minecraft Server
+     * @see ItemStackChecker#fakeStack(ItemStack, boolean)
+     * @see ItemStackChecker#inventoryStack(ItemStack)
+     * @see org.samo_lego.golfiv.mixin.illegal_items.ServerPlayNetworkHandlerMixin_CreativeItemsCheck
+     */
     @Override
     public void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server) {
         if (!golfConfig.packet.patchItemKickExploit) {
@@ -48,6 +63,11 @@ public class ItemInventoryKickPatch implements S2CPacketCallback {
                     packetLimit
             );
             if (player.isCreative() || oversized) {
+                // Creative players use a "quirks mode" path where the client may discard tags on receipt.
+                // This special handling for creative players ensures their inventory remains intact
+                // by preserving critical NBT data, even if some purely visual NBT ends up missing.
+                // This remains necessary to prevent creative players from accidentally wiping their inventory
+                // of various NBT required for items, even if it may produce some rendering quirks.
                 List<ItemStack> fakedContents = inventoryPacket.contents().stream()
                         .map(player.isCreative() ? ItemStackChecker::creativeInventoryStack : ItemStackChecker::inventoryStack)
                         .toList();
