@@ -11,6 +11,7 @@
     "accessors.InventoryS2CPacketAccessor",
     "accessors.ItemEntityAccessor",
     "accessors.LivingEntityAccessor",
+    "accessors.ServerCommonNetworkHandlerAccessor",
     "accessors.PlayerEntityAccessor",
     "accessors.PlayerMoveC2SPacketAccessor",
     "accessors.PlaySoundS2CPacketAccessor",
