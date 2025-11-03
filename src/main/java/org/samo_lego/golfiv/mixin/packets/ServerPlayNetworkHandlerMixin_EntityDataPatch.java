@@ -16,7 +16,6 @@ import org.samo_lego.golfiv.mixin.accessors.ItemEntityAccessor;
 import org.samo_lego.golfiv.mixin.accessors.LivingEntityAccessor;
 import org.samo_lego.golfiv.mixin.accessors.PlayerEntityAccessor;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
