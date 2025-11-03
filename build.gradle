@@ -143,6 +143,7 @@ tasks.modrinth {
 	onlyIf {
 		ENV.MODRINTH_TOKEN
 	}
+	dependsOn remapJar
 }
 
 modrinth {
@@ -153,8 +154,7 @@ modrinth {
 	versionType = "release"
 	changelog = ENV.CHANGELOG ?: "A changelog can be found at https://github.com/samolego/GolfIV/releases/tag/${version}"
 
-	def artifactName = project.base.archivesName.get()
-	uploadFile = file("${project.buildDir}/libs/${artifactName}-${version}.jar")
+	uploadFile = remapJar.archiveFile.get().asFile
 
 	gameVersions = [project.minecraft_version]
 	loaders = ['fabric', 'quilt']
