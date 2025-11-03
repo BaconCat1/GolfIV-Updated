@@ -104,6 +104,14 @@ public class ItemInventoryKickPatch implements S2CPacketCallback {
                 : UNCOMPRESSED_PACKET_LIMIT;
     }
 
+    /**
+     * Tests whether the encoded payload size would exceed the allowed packet limit.
+     *
+     * @param encoder callback that serializes the payload into the provided buffer
+     * @param registryManager registry manager used for encoding context
+     * @param packetLimit maximum number of bytes allowed for the packet
+     * @return {@code true} if the encoded payload is larger than {@code packetLimit}
+     */
     private static boolean isOversized(Consumer<RegistryByteBuf> encoder, DynamicRegistryManager registryManager, int packetLimit) {
         ByteBuf raw = Unpooled.buffer();
         RegistryByteBuf buffer = new RegistryByteBuf(raw, registryManager);
